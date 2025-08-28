@@ -1,5 +1,5 @@
 import React from 'react';
-import { ImageIcon, AlertTriangleIcon, DownloadIcon } from './icons';
+import { ImageIcon, AlertTriangleIcon, DownloadIcon, ShareIcon } from './icons';
 
 interface ResultDisplayProps {
   isLoading: boolean;
@@ -43,6 +43,32 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({ isLoading, error, 
     link.click();
     document.body.removeChild(link);
   };
+
+  const handleShare = async () => {
+    if (!editedImage || !navigator.share) {
+      alert("Sharing is not supported on your browser.");
+      return;
+    }
+
+    try {
+      const response = await fetch(editedImage);
+      const blob = await response.blob();
+      const mimeType = editedImage.substring(editedImage.indexOf(':') + 1, editedImage.indexOf(';'));
+      const extension = mimeType.split('/')[1] || 'png';
+      const file = new File([blob], `edited-image-${Date.now()}.${extension}`, { type: blob.type });
+
+      await navigator.share({
+        title: 'AI Edited Image',
+        text: 'Check out this image I edited with AI!',
+        files: [file],
+      });
+    } catch (err) {
+      if ((err as DOMException).name !== 'AbortError') {
+        console.error("Error sharing image:", err);
+        alert("An error occurred while trying to share the image.");
+      }
+    }
+  };
   
   return (
     <div className="w-full h-full flex-grow bg-brand-gray-900 rounded-lg flex items-center justify-center p-4 min-h-[300px] lg:min-h-0">
@@ -59,14 +85,23 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({ isLoading, error, 
           <div className="w-full">
             <h3 className="font-bold text-center mb-2 text-brand-purple-light">Edited</h3>
             <img src={editedImage} alt="Edited" className="w-full h-auto object-contain rounded-lg max-h-[calc(70vh-4rem)]" />
-            <div className="text-center">
+            <div className="mt-4 flex items-center justify-center gap-4">
                 <button
                 onClick={handleDownload}
-                className="mt-4 inline-flex items-center justify-center gap-2 py-2 px-5 text-md font-semibold rounded-lg transition-all duration-300 shadow-md bg-brand-purple hover:bg-brand-purple-light text-white transform hover:-translate-y-0.5"
+                className="inline-flex items-center justify-center gap-2 py-2 px-5 text-md font-semibold rounded-lg transition-all duration-300 shadow-md bg-brand-purple hover:bg-brand-purple-light text-white transform hover:-translate-y-0.5"
                 >
                 <DownloadIcon />
                 Download
                 </button>
+                {navigator.share && (
+                  <button
+                    onClick={handleShare}
+                    className="inline-flex items-center justify-center gap-2 py-2 px-5 text-md font-semibold rounded-lg transition-all duration-300 shadow-md bg-green-600 hover:bg-green-500 text-white transform hover:-translate-y-0.5"
+                  >
+                    <ShareIcon />
+                    Share
+                  </button>
+                )}
             </div>
           </div>
         </div>
