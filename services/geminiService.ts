@@ -1,10 +1,11 @@
 import { GoogleGenAI, Modality } from "@google/genai";
 
-// Per @google/genai guidelines, API key must be obtained from process.env.API_KEY.
+// FIX: Switched from import.meta.env.VITE_API_KEY to process.env.API_KEY to comply with @google/genai guidelines and resolve the TypeScript error.
 const apiKey = process.env.API_KEY;
 
 if (!apiKey) {
-  throw new Error("API_KEY environment variable is not set. Please check your project's environment configuration.");
+  // FIX: Updated the error message to reflect the change to using API_KEY.
+  throw new Error("API_KEY environment variable is not set. Please add it to your Vercel project settings.");
 }
 
 const ai = new GoogleGenAI({ apiKey });
