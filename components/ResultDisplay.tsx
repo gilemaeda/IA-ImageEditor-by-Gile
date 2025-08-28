@@ -1,6 +1,5 @@
-
 import React from 'react';
-import { ImageIcon, AlertTriangleIcon } from './icons';
+import { ImageIcon, AlertTriangleIcon, DownloadIcon } from './icons';
 
 interface ResultDisplayProps {
   isLoading: boolean;
@@ -30,6 +29,21 @@ const ErrorState: React.FC<{ message: string }> = ({ message }) => (
 
 
 export const ResultDisplay: React.FC<ResultDisplayProps> = ({ isLoading, error, editedImage, originalImage }) => {
+  const handleDownload = () => {
+    if (!editedImage) return;
+
+    const link = document.createElement('a');
+    link.href = editedImage;
+
+    const mimeType = editedImage.substring(editedImage.indexOf(':') + 1, editedImage.indexOf(';'));
+    const extension = mimeType.split('/')[1] || 'png';
+    link.download = `edited-image-${Date.now()}.${extension}`;
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+  
   return (
     <div className="w-full h-full flex-grow bg-brand-gray-900 rounded-lg flex items-center justify-center p-4 min-h-[300px] lg:min-h-0">
       {isLoading ? (
@@ -44,7 +58,16 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({ isLoading, error, 
           </div>
           <div className="w-full">
             <h3 className="font-bold text-center mb-2 text-brand-purple-light">Edited</h3>
-            <img src={editedImage} alt="Edited" className="w-full h-auto object-contain rounded-lg max-h-[70vh]" />
+            <img src={editedImage} alt="Edited" className="w-full h-auto object-contain rounded-lg max-h-[calc(70vh-4rem)]" />
+            <div className="text-center">
+                <button
+                onClick={handleDownload}
+                className="mt-4 inline-flex items-center justify-center gap-2 py-2 px-5 text-md font-semibold rounded-lg transition-all duration-300 shadow-md bg-brand-purple hover:bg-brand-purple-light text-white transform hover:-translate-y-0.5"
+                >
+                <DownloadIcon />
+                Download
+                </button>
+            </div>
           </div>
         </div>
       ) : (
