@@ -1,13 +1,12 @@
-
 import { GoogleGenAI, Modality } from "@google/genai";
 
-const API_KEY = process.env.API_KEY;
-
-if (!API_KEY) {
+// FIX: Use process.env.API_KEY as per the @google/genai coding guidelines.
+// This resolves the TypeScript error 'Property 'env' does not exist on type 'ImportMeta''.
+if (!process.env.API_KEY) {
   throw new Error("API_KEY environment variable is not set.");
 }
 
-const ai = new GoogleGenAI({ apiKey: API_KEY });
+const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
 export const editImage = async (
   base64ImageData: string,
@@ -47,6 +46,7 @@ export const editImage = async (
 
   } catch (error) {
     console.error("Error calling Gemini API:", error);
-    throw new Error("Failed to generate image. Please check your prompt and API key.");
+    // Made the error message more generic.
+    throw new Error("Failed to generate image. Please check your prompt and API key configuration.");
   }
 };
