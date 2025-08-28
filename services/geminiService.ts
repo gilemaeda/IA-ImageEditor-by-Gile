@@ -1,14 +1,11 @@
 import { GoogleGenAI, Modality } from "@google/genai";
 
-// FIX: Switched from import.meta.env.VITE_API_KEY to process.env.API_KEY to comply with @google/genai guidelines and resolve the TypeScript error.
-const apiKey = process.env.API_KEY;
-
-if (!apiKey) {
-  // FIX: Updated the error message to reflect the change to using API_KEY.
-  throw new Error("API_KEY environment variable is not set. Please add it to your Vercel project settings.");
+// Fix: Use process.env.API_KEY as per the Gemini API guidelines.
+if (!process.env.API_KEY) {
+  throw new Error("API_KEY environment variable is not set. Please add it to your project settings.");
 }
 
-const ai = new GoogleGenAI({ apiKey });
+const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
 export const editImage = async (
   base64ImageData: string,
